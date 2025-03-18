@@ -5,6 +5,7 @@ applications:
         preBuild:
           commands:
             - npm install --legacy-peer-deps
+            - npm install --save-dev typescript @types/react @types/node @types/react-dom
             - npx prisma generate
         build:
           commands:
