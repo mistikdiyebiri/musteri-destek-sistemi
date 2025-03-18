@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   output: "standalone",
   images: {
     domains: ["avatars.githubusercontent.com", "lh3.googleusercontent.com", "avatar.vercel.sh"],
@@ -12,9 +11,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  experimental: {
-    serverComponentsExternalPackages: ["bcrypt", "@prisma/client"],
-  },
+  // güncellenmiş yapılandırma - Next.js 15.2.3 ile uyumlu
+  serverExternalPackages: ["bcrypt", "@prisma/client", "prisma"],
   async headers() {
     return [
       {
