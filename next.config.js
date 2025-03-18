@@ -2,54 +2,41 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: "standalone", // Amplify için önemli
-  
+  output: "standalone",
   images: {
-    domains: ['*'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
+    domains: ["avatars.githubusercontent.com", "lh3.googleusercontent.com", "avatar.vercel.sh"],
   },
-  
-  // ESLint ve TypeScript hataları dağıtımı engellemesin
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  
-  // Amplify ortamında çalışacak şekilde deneysel özellikler
   experimental: {
-    serverComponentsExternalPackages: ['bcrypt', '@prisma/client', 'prisma'],
+    serverComponentsExternalPackages: ["bcrypt", "@prisma/client"],
   },
-  
-  // API rotaları için CORS başlıkları
   async headers() {
     return [
       {
-        // API rotaları için CORS başlıkları
-        source: '/api/:path*',
+        // API routes CORS ayarları
+        source: "/api/:path*",
         headers: [
-          { key: 'Access-Control-Allow-Credentials', value: 'true' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+          { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" },
         ],
       },
     ];
   },
-  
-  // Sayfaların doğru şekilde yönlendirilmesi için rewrite kuralları
   async rewrites() {
     return [
+      // Genel yönlendirmeler
       {
         source: '/:path*',
         destination: '/:path*',
       },
+      // API yönlendirmeleri
       {
         source: '/api/:path*',
         destination: '/api/:path*',
