@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Kullanıcı modeli
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // İlişkiler
+  tickets         Ticket[]   // Kullanıcının açtığı destek talepleri
+  assignedTickets Ticket[]   @relation("AssignedTo") // Kullanıcıya atanan destek talepleri
+  messages        Message[]  // Kullanıcının gönderdiği mesajlar
+
+  @@map("users")
+}
+
+// Rol enum'u
+enum Role {
+  USER
+  AGENT
+  ADMIN
+}
+
+// Destek talebi modeli
+model Ticket {
+  id          String       @id @default(cuid())
+  title       String
+  description String       @db.Text
+  status      TicketStatus @default(OPEN)
+  priority    Priority     @default(MEDIUM)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // İlişkiler
+  creator     User      @relation(fields: [creatorId], references: [id])
+  creatorId   String
+  assignedTo  User?     @relation("AssignedTo", fields: [assignedToId], references: [id])
+  assignedToId String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  messages    Message[]
+
+  @@map("tickets")
+}
+
+// Destek talebi durum enum'u
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+// Öncelik enum'u
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Mesaj modeli
+model Message {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  isInternal Boolean  @default(false) // Dahili not mu yoksa müşteriye gözüken mesaj mı
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // İlişkiler
+  user      User    @relation(fields: [userId], references: [id])
+  userId    String
+  ticket    Ticket  @relation(fields: [ticketId], references: [id])
+  ticketId  String
+  attachments Attachment[]
+
+  @@map("messages")
+}
+
+// Ek dosya modeli
+model Attachment {
+  id        String   @id @default(cuid())
+  filename  String
+  path      String
+  mimetype  String
+  size      Int
+  createdAt DateTime @default(now())
+
+  // İlişkiler
+  message   Message @relation(fields: [messageId], references: [id])
+  messageId String
+
+  @@map("attachments")
+}
+
+// Kategori modeli
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?  @db.Text
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // İlişkiler
+  tickets     Ticket[]
+
+  @@map("categories")
+}
+
+// Sistem ayarları modeli
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
