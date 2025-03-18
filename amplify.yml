@@ -8,6 +8,8 @@ frontend:
         - npm install --legacy-peer-deps
     build:
       commands:
+        - echo "Prisma istemcisini oluşturuyor..."
+        - npx prisma generate
         - echo "Build başlatılıyor..."
         - npm run build
         - echo "Build tamamlandı"
@@ -18,3 +20,4 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
+      - .next/cache/**/*
