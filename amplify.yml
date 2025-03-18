@@ -1,23 +1,21 @@
 version: 1
-frontend:
-  phases:
-    preBuild:
-      commands:
-        - echo "Node sürümü $(node -v)"
-        - echo "NPM sürümü $(npm -v)"
-        - npm install --legacy-peer-deps
-    build:
-      commands:
-        - echo "Prisma istemcisini oluşturuyor..."
-        - npx prisma generate
-        - echo "Build başlatılıyor..."
-        - npm run build
-        - echo "Build tamamlandı"
-  artifacts:
-    baseDirectory: .next
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
-      - .next/cache/**/*
+applications:
+  - frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm install --legacy-peer-deps
+            - npx prisma generate
+        build:
+          commands:
+            - echo "Building Next.js application..."
+            - npm run build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+          - .next/cache/**/*
+    appRoot: .
